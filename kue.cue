@@ -88,7 +88,7 @@ import (
 
 					"github.com/abc-dp/kue"
 				)
-				#Cluster: kue.#Cluster & {
+				#kue: kue.#KUE & {
 					#apiResources: apiResources
 					#resources: {
 						\(defs.text)
