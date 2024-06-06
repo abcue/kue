@@ -3,8 +3,9 @@ package kue
 import (
 	"encoding/json"
 	"encoding/yaml"
-	"strings"
+	ppath "path"
 	"regexp"
+	"strings"
 	"tool/cli"
 	"tool/exec"
 	"tool/file"
@@ -88,7 +89,7 @@ import (
 				import (
 					\(imports.text)
 
-					"github.com/abc-dp/cue-examples/kubernetes/kue"
+					"github.com/abc-dp/kue"
 				)
 				#Cluster: kue.#Cluster & {
 					#apiResources: apiResources
@@ -109,10 +110,10 @@ import (
 			stdout: string
 		}
 		mkdir: file.Mkdir & {
-			path: ".cluster"
+			path: ".kue"
 		}
 		txt: file.Create & {
-			filename: "\(mkdir.path)/api-resources.txt"
+			filename: ppath.Join([mkdir.path, "api-resources.txt"])
 			contents: run.stdout
 		}
 		txtPrint: cli.Print & {
@@ -147,7 +148,7 @@ import (
 					}
 				}}
 			}
-			filename: "\(mkdir.path)/api-resources.json"
+			filename: ppath.Join([mkdir.path, "api-resources.json"])
 			contents: json.Indent(json.Marshal(_locals.gvk), "", "  ")
 		}
 		jsonPrint: cli.Print & {
