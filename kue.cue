@@ -11,7 +11,7 @@ import (
 	"tool/file"
 )
 
-#Cluster: {
+#KUE: {
 	#apiResources: _
 	_ar: {
 		for v, vv in #apiResources for k, kv in vv {
