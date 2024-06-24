@@ -39,8 +39,15 @@ import (
 }
 
 #Command: {
-	#apiResources: _
-	_pkgId: {for p in [for v, vv in #apiResources for k, kv in vv {kv.package}] {
+	#var: {
+		apiResources: _
+		package:      *"kue" | _
+		path: *["kue", "apiResources"] | _
+	}
+	#local: {
+		pathArgs: strings.Join([for p in #var.path {#"--path "\#(p)""#}], " ")
+	}
+	_pkgId: {for p in [for v, vv in #var.apiResources for k, kv in vv {kv.package}] {
 		(p): strings.Replace(regexp.ReplaceAll("[/.]", strings.TrimPrefix(p, "k8s.io/api/"), ""), "apiserver", "", -1)
 	}}
 	"kue-init": {
@@ -50,7 +57,7 @@ import (
 		import: exec.Run & {
 			after: ar
 			let G = "api_resources_gen.cue"
-			cmd: #"cue import --force --package cluster --path "apiResources" \#(AR.json.filename) --outfile \#(G)"#
+			cmd: #"cue import --force --package \#(#var.package) \#(#local.pathArgs) \#(AR.json.filename) --outfile \#(G)"#
 		}
 		generate: exec.Run & {
 			after: import
@@ -58,13 +65,13 @@ import (
 		}
 	}
 	"kue-generate": {
-		let FN = "cluster_gen.cue"
+		let FN = "kue_gen.cue"
 		imports: cli.Print & {
 			_exclude: {
 				apiextensionsv1:   _
 				apiregistrationv1: _
 			}
-			text: strings.Join([for p, i in _pkgId if _exclude[i] == _|_ let P = regexp.ReplaceAll("\\.[^/]*(/[^/]+)$", p, "$1") {
+			text: strings.Join([for p, i in _pkgId if _exclude[i] == _|_ let P = strings.Replace(regexp.ReplaceAll("\\.[^/]*(/[^/]+)$", p, "$1"), "-", -1) {
 				#"\#t\#(i) "\#(P)""#
 			}], "\n")
 		}
@@ -74,14 +81,14 @@ import (
 				customresourcedefinitions: _
 				apiservices:               _
 			}
-			text: strings.Join([for v, vv in #apiResources for k, kv in vv if _exclude[kv.name] == _|_ {
+			text: strings.Join([for v, vv in #var.apiResources for k, kv in vv if _exclude[kv.name] == _|_ {
 				"\t\(kv.name)?: [_]: \(_pkgId[kv.package]).#\(k)"
 			}], "\n")
 		}
 		create: file.Create & {
 			filename: FN
 			contents: """
-				package cluster
+				package \(#var.package)
 
 				import (
 					\(imports.text)
@@ -155,6 +162,6 @@ import (
 	}
 	"kue-examples": cli.Print & {
 		_exclude: events: _
-		text: strings.Join([for v, vv in #apiResources for k, kv in vv if _exclude[kv.name] == _|_ {"\(kv.name): ex: _"}], "\n")
+		text: strings.Join([for v, vv in #var.apiResources for k, kv in vv if _exclude[kv.name] == _|_ {"\(kv.name): ex: _"}], "\n")
 	}
 }
