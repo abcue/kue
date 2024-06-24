@@ -1,0 +1,11 @@
+load(
+    "@rules_cue//cue:cue.bzl",
+    "cue_instance",
+)
+
+cue_instance(
+    name = "kue",
+    srcs = ["kue.cue"],
+    ancestor = "//cue.mod",
+    visibility = ["//:__subpackages__"],
+)

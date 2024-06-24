@@ -1,0 +1,26 @@
+###############################################################################
+# Bazel now uses Bzlmod by default to manage external dependencies.
+# Please consider migrating your external dependencies from WORKSPACE to MODULE.bazel.
+#
+# For more details, please check https://github.com/bazelbuild/bazel/issues/18958
+###############################################################################
+
+module(
+    name = "kue",
+    version = "0.0.0",
+)
+
+bazel_dep(name = "rules_cue", version = "0.7.0")
+git_override(
+    module_name = "rules_cue",
+    commit = "e36857b348fe02fbedda41cbd3dcd3c4146dba86",
+    remote = "https://github.com/abc-dp/rules_cue.git",
+)
+
+cue = use_extension("@rules_cue//cue:extensions.bzl", "cue")
+use_repo(
+    cue,
+    "cue_tool_toolchains",
+)
+
+register_toolchains("@cue_tool_toolchains//:all")
