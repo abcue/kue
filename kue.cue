@@ -3,7 +3,7 @@ package kue
 import (
 	"encoding/json"
 	"encoding/yaml"
-	ppath "path"
+	path_ "path"
 	"regexp"
 	"strings"
 	"tool/cli"
@@ -118,7 +118,7 @@ import (
 			path: ".kue"
 		}
 		txt: file.Create & {
-			filename: ppath.Join([mkdir.path, "api-resources.txt"])
+			filename: path_.Join([mkdir.path, "api-resources.txt"])
 			contents: run.stdout
 		}
 		txtPrint: cli.Print & {
@@ -153,7 +153,7 @@ import (
 					}
 				}}
 			}
-			filename: ppath.Join([mkdir.path, "api-resources.json"])
+			filename: path_.Join([mkdir.path, "api-resources.json"])
 			contents: json.Indent(json.Marshal(_locals.gvk), "", "  ")
 		}
 		jsonPrint: cli.Print & {
