@@ -57,7 +57,7 @@ import (
 		}
 		import: exec.Run & {
 			after: ar
-			let G = "\(#var.package)_api_resources_gen.cue"
+			let G = "kue_api_resources_gen.cue"
 			cmd: #"cue import --force --package \#(#var.package) \#(#local.pathArgs) \#(AR.json.filename) --outfile \#(G)"#
 		}
 		generate: exec.Run & {
@@ -66,7 +66,7 @@ import (
 		}
 	}
 	"kue-generate": {
-		let FN = "\(#var.package)_gen.cue"
+		let FN = "kue_gen.cue"
 		imports: cli.Print & {
 			_exclude: {
 				apiextensionsv1:   _
