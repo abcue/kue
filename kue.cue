@@ -42,11 +42,11 @@ import (
 	#var: {
 		apiResources: _
 		package:      *"kue" | _
-		paths: *["kubernetes", "apiResources"] | _
+		path: *["kubernetes", "apiResources"] | _
 	}
 	#local: {
-		pathArgs: strings.Join([for p in #var.paths {"--path \"\(p)\""}], " ")
-		expression: strings.Join(#var.paths, ".")
+		pathArgs: strings.Join([for p in #var.path {"--path \"\(p)\""}], " ")
+		expression: strings.Join(#var.path, ".")
 	}
 	_pkgId: {for p in [for v, vv in #var.apiResources for k, kv in vv {kv.package}] {
 		(p): strings.Replace(regexp.ReplaceAll("[/.]", strings.TrimPrefix(p, "k8s.io/api/"), ""), "apiserver", "", -1)
