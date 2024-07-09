@@ -12,9 +12,15 @@ import (
 )
 
 #KUE: {
-	#apiResources: _
-	_ar: {
-		for v, vv in #apiResources for k, kv in vv {
+	#var: {
+		apiResources: _
+		// resources tree indexed by "RESOURCE NAME": "SPECIFIC NAME": _
+		// Resource names are case-insensitive, shortname supported.
+		// e.g. `#var: resources: deploy: dp: _`
+		resources: [R=_]: [N=_]: _local.apiRs[strings.ToLower(R)] & {metadata: name: N}
+	}
+	_local: apiRs: {
+		for v, vv in #var.apiResources for k, kv in vv {
 			R=(kv.name): {
 				kind: k
 				// k._ar.events.apiVersion: conflicting values "events.k8s.io/v1" and "v1":
@@ -27,15 +33,8 @@ import (
 			}
 		}
 	}
-
-	// resources definition in tree form to be provided by user
-	// "RESOURCE NAME": "SPECIFIC NAME": _
-	// Resource names are case-insensitive, shortname supported.
-	// e.g. `#resources: deploy: dp: _`
-	#resources: [R=_]: [N=_]: _ar[strings.ToLower(R)] & {metadata: name: N}
-
 	// desired manifests as `kubectl get -o yaml` in yaml stream form
-	manifests: yaml.MarshalStream([for _, k in #resources for _, n in k {n}])
+	manifests: yaml.MarshalStream([for _, k in #var.resources for _, n in k {n}])
 }
 
 #Command: {
@@ -75,11 +74,11 @@ import (
 		}
 	}
 	"kue-init": {
-		ar: exec.Run & {
+		apiRs: exec.Run & {
 			cmd: "cue cmd kue-api-resources"
 		}
 		import: exec.Run & {
-			after: ar
+			after: apiRs
 			let G = "kue_api_resources_gen.cue"
 			cmd: #"cue import --force --package \#(#var.package) \#(_local.pathArgs) \#(AR.json.filename) --outfile \#(G)"#
 		}
