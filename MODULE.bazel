@@ -14,7 +14,7 @@ bazel_dep(name = "rules_cue", version = "0.7.0")
 git_override(
     module_name = "rules_cue",
     commit = "e36857b348fe02fbedda41cbd3dcd3c4146dba86",
-    remote = "https://github.com/abc-dp/rules_cue.git",
+    remote = "https://github.com/abcue/seh_rules_cue.git",
 )
 
 cue = use_extension("@rules_cue//cue:extensions.bzl", "cue")
