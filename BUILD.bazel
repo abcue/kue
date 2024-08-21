@@ -1,5 +1,5 @@
 load(
-    "@rules_cue//cue:cue.bzl",
+    "@rules_abcue//cue:defs.bzl",
     "cue_instance",
 )
 

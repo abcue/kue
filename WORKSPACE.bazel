@@ -1,6 +1,9 @@
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
 http_archive(
     name = "rules_abcue",
-    # sha256 = "6734a719993b1ba4ebe9806e853864395a8d3968ad27f9dd759c196b3eb3abe8",
+    sha256 = "54f3d777440f1b40d2f6bf8c08af7f50672b3fea614751d3f4a9767e2aaf381d",
+    strip_prefix = "rules_abcue-main",
     urls = [
         "https://github.com/abcue/rules_abcue/archive/refs/heads/main.zip",
     ],
