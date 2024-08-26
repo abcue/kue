@@ -1,0 +1,36 @@
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "rules_abcue",
+    sha256 = "54f3d777440f1b40d2f6bf8c08af7f50672b3fea614751d3f4a9767e2aaf381d",
+    strip_prefix = "rules_abcue-main",
+    urls = [
+        "https://github.com/abcue/rules_abcue/archive/refs/heads/main.zip",
+    ],
+)
+
+load("@rules_abcue//cue:repositories.bzl", "cue_register_toolchains", "rules_abcue_dependencies")
+
+rules_abcue_dependencies()
+
+cue_register_toolchains(
+    name = "cue",
+    cue_version = "0.8.2",
+)
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "io_bazel_rules_go",
+    sha256 = "6734a719993b1ba4ebe9806e853864395a8d3968ad27f9dd759c196b3eb3abe8",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/v0.45.1/rules_go-v0.45.1.zip",
+        "https://github.com/bazelbuild/rules_go/releases/download/v0.45.1/rules_go-v0.45.1.zip",
+    ],
+)
+
+load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
+
+go_rules_dependencies()
+
+go_register_toolchains(version = "1.21.6")

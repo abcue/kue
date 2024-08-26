@@ -13,7 +13,7 @@ import (
 
 #KUE: {
 	#var: {
-		apiResources: _
+		apiResources: {...}
 		// resources tree indexed by "RESOURCE NAME": "SPECIFIC NAME": _
 		// Resource names are case-insensitive, shortname supported.
 		// e.g. `#var: resources: deploy: dp: _`
@@ -108,7 +108,7 @@ import (
 				import (
 					\(imports.text)
 
-					"github.com/abc-dp/kue"
+					"github.com/abcue/kue"
 				)
 				#kue: kue.#KUE & {
 					#apiResources: \(_local.expression)

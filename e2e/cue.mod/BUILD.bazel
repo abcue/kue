@@ -1,0 +1,5 @@
+load("@rules_abcue//cue:defs.bzl", "cue_module")
+
+cue_module(
+    visibility = ["//:__subpackages__"],
+)
