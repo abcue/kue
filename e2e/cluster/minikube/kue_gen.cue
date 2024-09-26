@@ -23,7 +23,7 @@ import (
 	"github.com/abcue/kue"
 )
 
-#kue: kue.#KUE & {
+#KUE: kue.#KUE & {
 	#var: {
 		apiResources: kubernetes.apiResources
 		resources: {

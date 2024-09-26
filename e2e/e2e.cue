@@ -2,7 +2,7 @@ package e2e
 
 import minikube "github.com/abcue/kue/e2e/cluster/minikube:cluster"
 
-k: minikube.#kue & {
+test: minikube.#KUE & {
 	#var: resources: {
 		bindings: ex:                          _
 		componentstatuses: ex:                 _

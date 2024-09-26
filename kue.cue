@@ -53,6 +53,7 @@ import (
 			(p): regexp.ReplaceAll("[/.-]", strings.TrimPrefix(p, "k8s.io/api/"), "_")
 		}}
 	}
+	// vendor crds from cluster
 	"kue-crds": {
 		mkdir: file.Mkdir & {
 			path: _local.dir
@@ -73,6 +74,7 @@ import (
 			cmd:    "timoni mod vendor crds --file \(F)"
 		}
 	}
+	// initialize api resources and definitions
 	"kue-init": {
 		apiRs: exec.Run & {
 			cmd: "cue cmd kue-api-resources"
@@ -87,7 +89,8 @@ import (
 			cmd:   "cue cmd kue-generate"
 		}
 	}
-	"kue-generate": {
+	// generate resource definitions
+	"kue-gen": {
 		let FN = "kue_gen.cue"
 		imports: cli.Print & {
 			text: strings.Join([for p, i in _local.pkgId let P = regexp.ReplaceAll("\\.[^/]*(/[^/]+)$", p, "$1") {
@@ -110,10 +113,12 @@ import (
 
 					"github.com/abcue/kue"
 				)
-				#kue: kue.#KUE & {
-					#apiResources: \(_local.expression)
-					#resources: {
-						\(defs.text)
+				#KUE: kue.#KUE & {
+					#var: {
+						apiResources: \(_local.expression)
+						resources: {
+							\(defs.text)
+						}
 					}
 				}
 				"""
@@ -123,6 +128,7 @@ import (
 			cmd:    "cue fmt \(FN)"
 		}
 	}
+	// vendor api resources
 	AR="kue-api-resources": {
 		run: exec.Run & {
 			cmd:    "kubectl api-resources"
@@ -198,8 +204,9 @@ import (
 			text: strings.Join(["Convert to JSON", J.contents], "\n\n")
 		}
 	}
-	"kue-examples": cli.Print & {
+	// generate e2e test cases
+	"kue-e2e": cli.Print & {
 		_exclude: events: _
-		text: strings.Join([for v, vv in #var.apiResources for k, kv in vv if _exclude[kv.name] == _|_ {"\(kv.name): ex: _"}], "\n")
+		text: strings.Join([for v, vv in #var.apiResources for k, kv in vv if _exclude[kv.name] == _|_ {"\(kv.name): e2e: _"}], "\n")
 	}
 }
