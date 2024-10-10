@@ -24,3 +24,5 @@ use_repo(
 )
 
 register_toolchains("@cue_tool_toolchains//:all")
+
+bazel_dep(name = "buildifier_prebuilt", version = "6.1.2", dev_dependency = True)
