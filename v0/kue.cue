@@ -42,12 +42,13 @@ import (
 		apiResources: _
 		package:      *"kue" | _
 		path: *["kubernetes", "apiResources"] | _
-		modDir:  *"../.." | _
-		relPath: *"cluster/kind" | _
+		// TODO: detect modDir and relPath from command dir
+		modDir:  _
+		relPath: _
 	}
 	_local: {
 		dir: ".kue"
-		pathArgs: strings.Join([for p in #var.path {"--path \"\(p)\""}], " ")
+		pathArgs: strings.Join([for p in #var.path {#"--path "\#(p)""#}], " ")
 		expression: strings.Join(#var.path, ".")
 		pkgId: {for p in [for v, vv in #var.apiResources for k, kv in vv {kv.package}] {
 			(p): regexp.ReplaceAll("[/.-]", strings.TrimPrefix(p, "k8s.io/api/"), "_")
@@ -74,50 +75,44 @@ import (
 			cmd:    "timoni mod vendor crds --file \(F)"
 		}
 	}
-	// initialize api resources and definitions
-	"kue-init": {
-		apiRs: exec.Run & {
+	// generate all
+	"kue-gen": {
+		api: exec.Run & {
 			cmd: "cue cmd kue-api-resources"
 		}
 		import: exec.Run & {
-			after: apiRs
-			let G = "kue_api_resources_gen.cue"
-			cmd: #"cue import --force --package \#(#var.package) \#(_local.pathArgs) \#(AR.json.filename) --outfile \#(G)"#
+			after: api
+			cmd:   "cue import --force --package \(#var.package) \(_local.pathArgs) \(AR.json.filename) --outfile kue_api_resources_gen.cue"
 		}
-		generate: exec.Run & {
+		defs: exec.Run & {
 			after: import
-			cmd:   "cue cmd kue-generate"
+			cmd:   "cue cmd kue-defs"
 		}
 	}
 	// generate resource definitions
-	"kue-gen": {
-		let FN = "kue_gen.cue"
-		imports: cli.Print & {
-			text: strings.Join([for p, i in _local.pkgId let P = regexp.ReplaceAll("\\.[^/]*(/[^/]+)$", p, "$1") {
+	"kue-defs": {
+		let FN = "kue_defs_gen.cue"
+		create: file.Create & {
+			let IMP = strings.Join([for p, i in _local.pkgId let P = regexp.ReplaceAll("\\.[^/]*(/[^/]+)$", p, "$1") {
 				#"\#t\#(i) "\#(P)""#
 			}], "\n")
-		}
-		defs: cli.Print & {
-			$after: imports
-			text: strings.Join([for v, vv in #var.apiResources for k, kv in vv {
+			let RS = strings.Join([for v, vv in #var.apiResources for k, kv in vv {
 				"\t\(kv.name)?: [_]: \(_local.pkgId[kv.package]).#\(k)"
 			}], "\n")
-		}
-		create: file.Create & {
 			filename: FN
 			contents: """
 				package \(#var.package)
 
 				import (
-					\(imports.text)
+					\(IMP)
 
-					"github.com/abcue/kue"
+					"github.com/abcue/kue/v0:kue"
 				)
 				#KUE: kue.#KUE & {
 					#var: {
 						apiResources: \(_local.expression)
 						resources: {
-							\(defs.text)
+							\(RS)
 						}
 					}
 				}
@@ -126,6 +121,9 @@ import (
 		fmt: exec.Run & {
 			$after: create
 			cmd:    "cue fmt \(FN)"
+		}
+		print: cli.Print & {
+			text: "Generating \(FN)"
 		}
 	}
 	// vendor api resources
@@ -141,10 +139,7 @@ import (
 			filename: path.Join([mkdir.path, "api-resources.txt"])
 			contents: run.stdout
 		}
-		txtPrint: cli.Print & {
-			text: strings.Join([run.cmd, txt.contents], "\n\n")
-		}
-		J="json": file.Create & {
+		"json": file.Create & {
 			_locals: {
 				lines:   strings.Split(run.stdout, "\n")
 				headers: strings.Fields(lines[0])
@@ -199,9 +194,8 @@ import (
 			filename: path.Join([mkdir.path, "api-resources.json"])
 			contents: json.Indent(json.Marshal(_locals.gvk), "", "  ")
 		}
-		jsonPrint: cli.Print & {
-			$after: txtPrint
-			text: strings.Join(["Convert to JSON", J.contents], "\n\n")
+		print: cli.Print & {
+			text: "Converting \(AR.txt.filename) to \(AR.json.filename)"
 		}
 	}
 	// generate e2e test cases

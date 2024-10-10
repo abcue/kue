@@ -20,7 +20,7 @@ import (
 	scheduling_v1 "k8s.io/api/scheduling/v1"
 	storage_v1 "k8s.io/api/storage/v1"
 
-	"github.com/abcue/kue"
+	"github.com/abcue/kue/v0:kue"
 )
 
 #KUE: kue.#KUE & {
