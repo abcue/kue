@@ -263,7 +263,7 @@ import (
 
 	// Standard list metadata
 	// +optional
-	listMeta?: metav1.#ListMeta @go(ListMeta) @protobuf(1,bytes,opt)
+	metadata?: metav1.#ListMeta @go(ListMeta) @protobuf(1,bytes,opt)
 
 	// Items is the list of resource ResourceSlices.
 	items: [...#ResourceSlice] @go(Items,[]ResourceSlice) @protobuf(2,bytes,rep)
