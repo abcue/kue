@@ -1,0 +1,15 @@
+load("@rules_abcue//cue:defs.bzl", "cue_def", "cue_instance")
+
+cue_instance(
+    name = "e2e",
+    package_name = "e2e",
+    srcs = ["e2e.cue"],
+    ancestor = "//cue.mod",
+    deps = ["//cluster/minikube:cluster"],
+)
+
+cue_def(
+    name = "e2e_def",
+    instance = ":e2e",
+    package = "e2e",
+)

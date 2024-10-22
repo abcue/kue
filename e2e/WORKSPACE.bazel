@@ -2,7 +2,7 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "rules_abcue",
-    sha256 = "54f3d777440f1b40d2f6bf8c08af7f50672b3fea614751d3f4a9767e2aaf381d",
+    sha256 = "670c5dd8ae9d5c06bacd3b074341e40ac330ed64c77e1a1ab689714c5a705720",
     strip_prefix = "rules_abcue-main",
     urls = [
         "https://github.com/abcue/rules_abcue/archive/refs/heads/main.zip",
@@ -15,10 +15,8 @@ rules_abcue_dependencies()
 
 cue_register_toolchains(
     name = "cue",
-    cue_version = "0.8.2",
+    cue_version = "0.11.1",
 )
-
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "io_bazel_rules_go",

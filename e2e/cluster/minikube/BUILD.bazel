@@ -1,0 +1,16 @@
+load("@rules_abcue//cue:defs.bzl", "cue_def", "cue_instance")
+
+cue_instance(
+    name = "cluster",
+    package_name = "cluster",
+    srcs = glob(["*.cue"]),
+    ancestor = "//cue.mod",
+    visibility = ["//:__subpackages__"],
+    deps = ["//cue.mod/pkg/github.com/abcue/kue/v0:kue"],
+)
+
+cue_def(
+    name = "cluster_def",
+    instance = ":cluster",
+    package = "cluster",
+)
