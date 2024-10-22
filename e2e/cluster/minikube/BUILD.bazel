@@ -1,0 +1,21 @@
+load("@rules_abcue//cue:defs.bzl", "cue_def", "cue_instance")
+
+cue_instance(
+    name = "cluster",
+    package_name = "cluster",
+    srcs = glob(["*.cue"]),
+    ancestor = "//cue.mod",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//cue.mod/gen/k8s.io/api/admission/v1",
+        "//cue.mod/gen/k8s.io/api/admissionregistration/v1",
+        "//cue.mod/gen/k8s.io/apimachinery/pkg/apis/meta/v1",
+        "//cue.mod/pkg/github.com/abcue/kue/v0:kue",
+    ],
+)
+
+cue_def(
+    name = "cluster_def",
+    instance = ":cluster",
+    package = "cluster",
+)

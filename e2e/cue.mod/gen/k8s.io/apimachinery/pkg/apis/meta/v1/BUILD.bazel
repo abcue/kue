@@ -1,0 +1,9 @@
+load("@rules_abcue//cue:defs.bzl", "cue_instance")
+
+cue_instance(
+    name = "v1",
+    package_name = "v1",
+    srcs = glob(["*.cue"]),
+    ancestor = "//cue.mod",
+    visibility = ["//:__subpackages__"],
+)

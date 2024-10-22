@@ -1,0 +1,12 @@
+load("@rules_abcue//cue:defs.bzl", "cue_instance")
+
+cue_instance(
+    name = "v1",
+    package_name = "v1",
+    srcs = glob(["*.cue"]),
+    ancestor = "//cue.mod",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//cue.mod/gen/k8s.io/apimachinery/pkg/apis/meta/v1",
+    ],
+)
