@@ -1,0 +1,14 @@
+load("@rules_abcue//cue:defs.bzl", "cue_def", "cue_export", "cue_instance")
+
+cue_instance(
+    name = "cue_instance",
+    package_name = "cluster",
+    srcs = glob(["*.cue"]),
+    ancestor = "//cue.mod",
+)
+
+cue_def(
+    name = "cue_def",
+    instance = ":cue_instance",
+    package = "cluster",
+)
