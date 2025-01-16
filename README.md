@@ -1,3 +1,6 @@
 # kue
 
-See examples in https://github.com/abc-dp/cue-examples/tree/main/kubernetes
+```
+mkdir -p cue.mod/pkg/github.com/abcue/kue/v0
+curl -sSL https://github.com/abcue/kue/raw/main/v0/kue.cue -o cue.mod/pkg/github.com/abcue/kue/v0/kue.cue
+```
